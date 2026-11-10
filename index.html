@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>My Pawfile</title>
+<style>
+  :root {
+    --bg: #FAF7F2;
+    --ink: #5C4A3F;
+    --bar: #E9E1D5;
+    --soft: #EFEBE4;
+    --tan: #CBB99F;
+    --grey: #8A7D72;
+    --banner: #F3EEE6;
+    --circle: #E4DCCE;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Arial, Helvetica, "Liberation Sans", sans-serif;
+    font-size: 16px;
+    line-height: 1.35;
+  }
+  body { overflow-x: hidden; }
+  .page { position: relative; max-width: 820px; margin: 0 auto; padding: 14px 16px 90px; }
+  .deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .deco span { position: absolute; color: var(--circle); display: block; opacity: .7; }
+  .deco span.side { display: none; }
+  @media (min-width: 1000px) { .deco span.side { display: block; } }
+  .deco svg { width: 100%; height: 100%; display: block; }
+  .content { position: relative; z-index: 1; }
+
+  /* banner */
+  .banner {
+    position: relative; overflow: hidden; background: var(--banner); border-radius: 18px;
+    height: 118px; display: flex; align-items: center; justify-content: center; gap: 14px;
+  }
+  .banner h1 { margin: 0; font-size: clamp(30px, 8.5vw, 54px); font-weight: 700; letter-spacing: -0.5px; white-space: nowrap; position: relative; z-index: 1; }
+  .banner .circle { position: absolute; border-radius: 50%; background: var(--circle); }
+  .banner .c1 { width: 190px; height: 190px; left: -60px; top: -80px; }
+  .banner .c2 { width: 160px; height: 160px; right: -50px; bottom: -80px; }
+  .banner .big { position: absolute; color: var(--ink); z-index: 1; }
+  .banner .big.l { width: 78px; height: 78px; left: 12px; top: 8px; transform: rotate(15deg); }
+  .banner .big.r { width: 58px; height: 58px; right: 14px; top: 10px; transform: rotate(-20deg); }
+  .banner .small { width: 34px; height: 34px; color: var(--tan); flex: none; position: relative; z-index: 1; }
+  .banner .small.l { transform: rotate(-15deg); }
+  .banner .small.r { transform: rotate(15deg); }
+  @media (max-width: 520px) {
+    .banner .small { display: none; }
+    .banner .big.l { width: 62px; height: 62px; }
+    .banner .big.r { width: 46px; height: 46px; }
+  }
+
+  /* messages */
+  .status { text-align: center; padding: 40px 12px; color: var(--grey); }
+  .status.error { color: #9a3b2e; }
+  .notice { background: #fff; border: 1.5px solid var(--tan); border-radius: 12px; padding: 10px 14px; margin: 14px 0 0; font-size: 14px; }
+  .notice.info { background: var(--soft); border-color: var(--bar); }
+
+  /* form layout */
+  .top { display: grid; grid-template-columns: 1fr 230px; gap: 22px; margin-top: 18px; align-items: start; }
+  .fields { display: grid; gap: 14px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+  .stack { display: grid; gap: 14px; margin-top: 14px; }
+  .field { min-width: 0; }
+  .lbl { display: block; font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+  .ctl, .val {
+    display: block; width: 100%; min-height: 36px; padding: 7px 2px 5px;
+    border: 0; border-bottom: 1.5px solid var(--ink); border-radius: 0;
+    background: transparent; color: var(--ink); font: inherit; font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+  select.ctl { appearance: auto; }
+  .ctl:focus { outline: none; background: rgba(255,255,255,.75); border-bottom-color: #a07f5f; box-shadow: 0 2px 0 #a07f5f; }
+  .val.empty { color: var(--grey); }
+  .val a { color: var(--ink); font-weight: 700; }
+  textarea.ctl { border: 2px solid var(--ink); border-radius: 10px; background: #fff; padding: 10px; min-height: 130px; resize: vertical; }
+  .val.notes { border: 2px solid var(--ink); border-radius: 10px; background: #fff; padding: 10px; min-height: 90px; white-space: pre-wrap; }
+
+  .photo {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    border: 6px solid var(--tan); border-radius: 18px; background: #fff; min-height: 240px; overflow: hidden;
+    position: relative; padding: 10px; font-size: 13px; color: var(--grey);
+  }
+  .photo.has { padding: 0; border-width: 6px; }
+  .photo img { display: block; width: 100%; height: 100%; max-height: 330px; object-fit: cover; }
+  .photo .pawph { width: 64px; height: 64px; color: var(--circle); margin-bottom: 8px; }
+  .photo b { color: var(--ink); font-size: 15px; }
+  .photo.edit { cursor: pointer; }
+  .photo input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .linkbtn { background: none; border: 0; padding: 6px 0 0; color: var(--grey); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+  .photocol { min-width: 0; text-align: center; }
+  @media (max-width: 640px) {
+    .top { grid-template-columns: 1fr; }
+    .photocol { order: -1; }
+    .photo { min-height: 200px; max-width: 260px; margin: 0 auto; }
+    .stack .pair.split { grid-template-columns: 1fr; }
+  }
+
+  .bar {
+    display: flex; align-items: center; gap: 12px; background: var(--bar); border-radius: 999px;
+    padding: 9px 20px; margin: 26px 0 14px; font-weight: 700; font-size: 18px;
+  }
+  .bar svg { height: 20px; width: auto; color: var(--ink); display: block; }
+
+  .closing { text-align: center; font-style: italic; margin: 30px 0 6px; }
+  .tools { text-align: center; margin-top: 8px; }
+
+  .savebar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: rgba(250,247,242,.96);
+    border-top: 1.5px solid var(--bar); padding: 10px 16px; display: flex; gap: 14px; justify-content: center; align-items: center;
+  }
+  .btn { background: var(--ink); color: #fff; border: 0; border-radius: 999px; padding: 12px 28px; font: inherit; font-weight: 700; cursor: pointer; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  #msg { font-size: 14px; min-height: 18px; }
+  #msg.err { color: #9a3b2e; font-weight: 700; }
+
+  @media print {
+    .savebar, .noprint, .notice, .linkbtn { display: none !important; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { padding-bottom: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="deco" aria-hidden="true" id="deco"></div>
+  <div class="content">
+    <header class="banner">
+      <span class="circle c1"></span><span class="circle c2"></span>
+      <span class="big l" data-icon="dog"></span>
+      <span class="big r" data-icon="dog"></span>
+      <span class="small l" data-icon="cat"></span>
+      <h1>My Pawfile</h1>
+      <span class="small r" data-icon="cat"></span>
+    </header>
+    <div id="status" class="status">Loading&hellip;</div>
+    <main id="app" hidden></main>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // >>> Paste your Google Apps Script "Web app" URL here (see SETUP.md). <<<
+  var API_URL = 'https://script.google.com/macros/s/AKfycbyTNplB71ZpLlSRyi-dXlqaFI8vYwfJ7aiZYY03CgL1V_nK6EZgJHdpHtqDWErf7PA0TQ/exec';
+
+  var params = new URLSearchParams(location.search);
+  var ID = (params.get('id') || '').trim();
+  var KEY = (params.get('key') || '').trim();
+  var DEMO = ID === 'demo';
+
+  var ICONS = {
+    dog: '<svg viewBox="-75 -80 150 150" fill="currentColor"><ellipse cx="0" cy="16" rx="42" ry="30"/><ellipse cx="0" cy="-6" rx="30" ry="16"/><ellipse cx="-52" cy="-30" rx="16" ry="22"/><ellipse cx="-20" cy="-52" rx="16" ry="24"/><ellipse cx="20" cy="-52" rx="16" ry="24"/><ellipse cx="52" cy="-30" rx="16" ry="22"/></svg>',
+    cat: '<svg viewBox="-65 -60 130 120" fill="currentColor"><ellipse cx="0" cy="17.5" rx="30" ry="22.5"/><circle cx="-16" cy="12" r="17"/><circle cx="16" cy="12" r="17"/><circle cx="0" cy="5" r="20"/><circle cx="-45" cy="-14" r="13.5"/><circle cx="-17" cy="-42" r="13.5"/><circle cx="17" cy="-42" r="13.5"/><circle cx="45" cy="-14" r="13.5"/></svg>',
+    bone: '<svg viewBox="-60 -35 120 70" fill="currentColor"><g transform="rotate(-20)"><rect x="-32" y="-9" width="64" height="18"/><circle cx="-36" cy="-10" r="17"/><circle cx="-36" cy="10" r="17"/><circle cx="36" cy="-10" r="17"/><circle cx="36" cy="10" r="17"/></g></svg>',
+    fish: '<svg viewBox="-55 -35 110 70" fill="currentColor"><ellipse cx="-10" cy="0" rx="40" ry="26"/><polygon points="20,0 52,28 52,-28"/><circle cx="-34" cy="-7" r="5" fill="#fff"/></svg>',
+    heart: '<svg viewBox="-60 -45 120 95" fill="currentColor"><path d="M0,42.5 C-75,-5 -35,-50 0,-17.5 C35,-50 75,-5 0,42.5 Z"/></svg>'
+  };
+  document.querySelectorAll('[data-icon]').forEach(function (n) { n.innerHTML = ICONS[n.getAttribute('data-icon')]; });
+
+  // soft background paw prints
+  (function () {
+    var deco = document.getElementById('deco');
+    // [icon, side ('l' / 'r' / '' = bottom), position, top %, size, rotation]
+    [['dog', 'l', -78, 20, 46, 0], ['cat', 'r', -72, 28, 36, 18], ['dog', 'r', -80, 50, 42, -12],
+     ['cat', 'l', -70, 46, 34, 20], ['dog', 'l', -80, 72, 44, 28], ['cat', 'r', -70, 78, 34, -10],
+     ['cat', '', 12, 97.5, 30, -8], ['dog', '', 84, 97, 38, 14]]
+      .forEach(function (p) {
+        var s = document.createElement('span');
+        var pos = p[1] === 'l' ? 'left:' + p[2] + 'px' : (p[1] === 'r' ? 'right:' + p[2] + 'px' : 'left:' + p[2] + '%');
+        s.className = p[1] ? 'side' : '';
+        s.style.cssText = pos + ';top:' + p[3] + '%;width:' + p[4] + 'px;height:' + p[4] + 'px;transform:rotate(' + p[5] + 'deg)';
+        s.innerHTML = ICONS[p[0]];
+        deco.appendChild(s);
+      });
+  })();
+
+  var F = {
+    pet_name:    { label: 'Name / Nicknames' },
+    gender:      { label: 'Good girl / boy?', type: 'select', options: ['Girl', 'Boy'] },
+    neutered:    { label: 'Neutered?', type: 'select', options: ['Yes', 'No'] },
+    breed:       { label: 'Breed' },
+    color:       { label: 'Coat colour' },
+    birthdate:   { label: 'Birthdate', type: 'date' },
+    weight:      { label: 'Weight' },
+    notes:       { label: 'Notes (allergies, medication)', type: 'textarea', max: 3000 },
+    fav_treat:   { label: 'Favourite treat' },
+    fav_toy:     { label: 'Favourite toy' },
+    quirk:       { label: 'Funniest habit' },
+    social_instagram: { label: 'Instagram', social: 'instagram', hint: '@handle or link' },
+    social_tiktok:    { label: 'TikTok',    social: 'tiktok',    hint: '@handle or link' },
+    social_facebook:  { label: 'Facebook',  social: 'facebook',  hint: 'page name or link' },
+    social_other:     { label: 'Other',     social: 'other',     hint: 'website or link' }
+  };
+
+  // Turn what someone typed ("@mochi", "mochi", or a full link) into a safe https link, or '' if it can't be one.
+  function socialHref(kind, raw) {
+    var v = String(raw || '').trim();
+    if (!v) return '';
+    if (/^https?:\/\/[^\s<>"']+$/i.test(v)) return v;
+    if (/\s/.test(v)) return '';
+    var h = v.replace(/^@/, '');
+    if (kind === 'instagram' && /^[A-Za-z0-9._]{1,30}$/.test(h)) return 'https://www.instagram.com/' + h;
+    if (kind === 'tiktok' && /^[A-Za-z0-9._]{1,40}$/.test(h)) return 'https://www.tiktok.com/@' + h;
+    if (kind === 'facebook' && /^[A-Za-z0-9.\-]{3,80}$/.test(h)) return 'https://www.facebook.com/' + h;
+    if (kind === 'other' && /^[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)+(\/[^\s<>"']*)?$/.test(v)) return 'https://' + v;
+    return '';
+  }
+
+  var app = document.getElementById('app');
+  var statusEl = document.getElementById('status');
+  var editable = false, els = {}, d = {}, photoUrl = '', photoChanged = false, dirty = false;
+
+  function el(tag, attrs) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else n.setAttribute(k, attrs[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null) continue;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return n;
+  }
+  function icon(name) { var s = el('span'); s.innerHTML = ICONS[name]; return s.firstChild; }
+  function showStatus(msg, kind) { statusEl.hidden = false; statusEl.className = 'status' + (kind ? ' ' + kind : ''); statusEl.textContent = msg; app.hidden = true; }
+
+  function niceDate(v) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+    if (!m) return v;
+    var dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return isNaN(dt) ? v : dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function field(key) {
+    var def = F[key], v = d[key] || '', wrap = el('div', { class: 'field' });
+    if (editable) {
+      var id = 'f_' + key, ctl;
+      wrap.appendChild(el('label', { class: 'lbl', 'for': id, text: def.label }));
+      if (def.type === 'select') {
+        ctl = el('select', { class: 'ctl', id: id });
+        ctl.appendChild(el('option', { value: '', text: 'Choose…' }));
+        var opts = def.options.slice();
+        if (v && opts.indexOf(v) === -1) opts.push(v);
+        opts.forEach(function (o) { ctl.appendChild(el('option', { value: o, text: o })); });
+      } else if (def.type === 'textarea') {
+        ctl = el('textarea', { class: 'ctl', id: id, maxlength: def.max || 3000, rows: 5 });
+      } else {
+        ctl = el('input', { class: 'ctl', id: id, type: def.type === 'date' ? 'date' : 'text', maxlength: 200, autocomplete: 'off' });
+      }
+      ctl.value = v;
+      if (def.hint) ctl.setAttribute('placeholder', def.hint);
+      ctl.addEventListener('input', function () { dirty = true; });
+      els[key] = ctl;
+      wrap.appendChild(ctl);
+    } else {
+      wrap.appendChild(el('div', { class: 'lbl', text: def.label }));
+      var val = el('div', { class: 'val' + (def.type === 'textarea' ? ' notes' : '') + (v ? '' : ' empty') });
+      if (!v) val.textContent = '—';
+      else if (def.social && socialHref(def.social, v)) val.appendChild(el('a', { href: socialHref(def.social, v), target: '_blank', rel: 'noopener noreferrer', text: v }));
+      else val.textContent = def.type === 'date' ? niceDate(v) : v;
+      wrap.appendChild(val);
+    }
+    return wrap;
+  }
+
+  function pair() {
+    var p = el('div', { class: 'pair' });
+    for (var i = 0; i < arguments.length; i++) p.appendChild(field(arguments[i]));
+    return p;
+  }
+  function stackPair() { var p = pair.apply(null, arguments); p.className = 'pair split'; return p; }
+  function bar(text, icons) {
+    var b = el('div', { class: 'bar' }, el('span', { text: text }));
+    icons.forEach(function (n) { b.appendChild(icon(n)); });
+    return b;
+  }
+  function notice(msg, kind) { app.appendChild(el('div', { class: 'notice' + (kind ? ' ' + kind : ''), text: msg })); }
+
+  function photoBlock() {
+    var col = el('div', { class: 'photocol' });
+    var box = el('div', { class: 'photo' + (editable ? ' edit' : '') });
+    var fileInput = null;
+    if (editable) {
+      fileInput = el('input', { type: 'file', accept: 'image/*', 'aria-label': 'Choose a photo' });
+      fileInput.addEventListener('change', function () {
+        var f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        resizeImage(f).then(function (url) { photoUrl = url; photoChanged = true; dirty = true; paint(); })
+          .catch(function () { setMsg('Sorry, that photo could not be read.', true); });
+        fileInput.value = '';
+      });
+    }
+    function paint() {
+      box.textContent = '';
+      box.className = 'photo' + (editable ? ' edit' : '') + (photoUrl ? ' has' : '');
+      if (photoUrl && /^data:image\//.test(photoUrl)) {
+        var img = el('img', { alt: 'Photo of ' + (d.pet_name || 'my pet') });
+        img.src = photoUrl;
+        box.appendChild(img);
+      } else {
+        var ph = el('span', { class: 'pawph' }); ph.innerHTML = ICONS.dog;
+        box.appendChild(ph);
+        box.appendChild(el('b', { text: editable ? 'Tap to add a photo' : 'Photo coming soon' }));
+      }
+      if (editable) box.appendChild(fileInput);
+      remove.hidden = !(editable && photoUrl);
+    }
+    var remove = el('button', { class: 'linkbtn', type: 'button', text: 'Remove photo' });
+    remove.addEventListener('click', function () { photoUrl = ''; photoChanged = true; dirty = true; paint(); });
+    col.appendChild(box);
+    col.appendChild(remove);
+    paint();
+    return col;
+  }
+
+  function resizeImage(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var max = 640, w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, max / Math.max(w, h));
+        w = Math.round(w * s); h = Math.round(h * s);
+        var c = document.createElement('canvas'); c.width = w; c.height = h;
+        var ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('image')); };
+      img.src = url;
+    });
+  }
+
+  function render(res) {
+    editable = !!res.editable;
+    d = res.data || {};
+    photoUrl = res.photo || '';
+    photoChanged = false; dirty = false; els = {};
+    statusEl.hidden = true; app.hidden = false; app.textContent = '';
+    if (d.pet_name) document.title = d.pet_name + ' – My Pawfile';
+
+    if (KEY && res.locked) notice('This profile has been locked, so it can’t be edited. You’re seeing the saved version.');
+    else if (KEY && !editable) notice('This edit link isn’t valid, so you’re seeing the saved profile.');
+    if (editable) notice('You are editing this profile. Press “Save profile” at the bottom when you’re done.', 'info');
+
+    var top = el('section', { class: 'top' },
+      el('div', { class: 'fields' }, field('pet_name'), pair('gender', 'neutered'), pair('breed', 'color'), pair('birthdate', 'weight')),
+      photoBlock());
+    app.appendChild(top);
+
+    app.appendChild(el('div', { class: 'stack' }, field('notes')));
+
+    app.appendChild(bar('The Good Stuff', ['bone', 'fish']));
+    app.appendChild(el('div', { class: 'stack' }, stackPair('fav_treat', 'fav_toy'), field('quirk')));
+
+    app.appendChild(bar('My Socials', ['heart']));
+    app.appendChild(el('div', { class: 'stack' }, stackPair('social_instagram', 'social_tiktok'), stackPair('social_facebook', 'social_other')));
+
+    app.appendChild(el('p', { class: 'closing', text: '~ Please help me call my hoomans if I’m lost ~ Thank you! ~' }));
+
+    if (editable) {
+      var msg = el('span', { id: 'msg', 'aria-live': 'polite' });
+      var btn = el('button', { class: 'btn', type: 'button', text: 'Save profile' });
+      btn.addEventListener('click', function () { save(btn); });
+      app.appendChild(el('div', { class: 'savebar' }, btn, msg));
+    } else {
+      var print = el('button', { class: 'linkbtn noprint', type: 'button', text: 'Print / save as PDF' });
+      print.addEventListener('click', function () { window.print(); });
+      app.appendChild(el('div', { class: 'tools noprint' }, print));
+    }
+  }
+
+  function setMsg(text, isErr) {
+    var m = document.getElementById('msg');
+    if (!m) return;
+    m.textContent = text; m.className = isErr ? 'err' : '';
+  }
+
+  function save(btn) {
+    var data = {};
+    Object.keys(F).forEach(function (k) { data[k] = els[k] ? els[k].value.trim() : ''; });
+    var payload = { action: 'save', id: ID, key: KEY, data: data };
+    if (photoChanged) payload.photo = photoUrl ? photoUrl : null;
+
+    btn.disabled = true; setMsg('Saving…');
+    var done = DEMO
+      ? new Promise(function (r) { setTimeout(function () { r({ ok: true }); }, 500); })
+      : fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) }).then(function (r) { return r.json(); });
+    done.then(function (res) {
+      if (!res.ok) throw new Error(res.error || 'failed');
+      dirty = false; photoChanged = false; d = data;
+      setMsg(DEMO ? 'Demo only – nothing was saved' : 'Saved ✓');
+    }).catch(function (e) {
+      setMsg(e.message === 'locked' ? 'This profile is locked.' : 'Could not save. Please try again.', true);
+    }).then(function () { btn.disabled = false; });
+  }
+
+  window.addEventListener('beforeunload', function (e) {
+    if (editable && dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  function demoResponse() {
+    return {
+      ok: true, editable: KEY === 'demo', locked: false, photo: '',
+      data: {
+        pet_name: 'Mochi / Mo-Mo', gender: 'Girl', neutered: 'Yes', breed: 'Shiba Inu', color: 'Cream',
+        birthdate: '2021-03-14', weight: '9 kg',
+        notes: 'Allergic to chicken.\nFriendly but shy with strangers – offer a treat and speak softly.',
+        fav_treat: 'Dried salmon', fav_toy: 'Squeaky duck', quirk: 'Sleeps on her back',
+        social_instagram: '@mochi_the_shiba', social_tiktok: '@mochi.shiba', social_facebook: 'MochiTheShiba', social_other: 'mochi-the-shiba.example.com/blog'
+      }
+    };
+  }
+
+  function load() {
+    if (!ID) { showStatus('Please open a Pawfile link to see a profile. Each profile has its own link.'); return; }
+    showStatus('Loading…');
+    var req;
+    if (DEMO) req = Promise.resolve(demoResponse());
+    else if (API_URL.indexOf('PASTE_') === 0) { showStatus('This page is not connected to its data yet (see SETUP.md).', 'error'); return; }
+    else {
+      var url = API_URL + (API_URL.indexOf('?') === -1 ? '?' : '&') + 'action=get&id=' + encodeURIComponent(ID) + (KEY ? '&key=' + encodeURIComponent(KEY) : '');
+      req = fetch(url).then(function (r) { return r.json(); });
+    }
+    req.then(function (res) {
+      if (!res || !res.ok) showStatus('Sorry, I couldn’t find this profile. Please check the link.', 'error');
+      else render(res);
+    }).catch(function () { showStatus('Couldn’t load the profile. Please check your connection and try again.', 'error'); });
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
